@@ -42,6 +42,8 @@ public class SendMessageExecutor implements ActivityExecutor<SendMessage> {
 
 
 
+    log.debug("Sending message to rooms {}", streamIds);
+
     Message messageToSend = this.buildMessage(execution);
 
     V4Message message;

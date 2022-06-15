@@ -39,7 +39,8 @@ public class SendMessageExecutor implements ActivityExecutor<SendMessage> {
   public void execute(ActivityExecutorContext<SendMessage> execution) throws IOException {
     SendMessage activity = execution.getActivity();
     List<String> streamIds = resolveStreamId(execution, activity, execution.bdk().streams());
-    log.debug("Sending message to rooms {}", streamIds);
+
+
 
     Message messageToSend = this.buildMessage(execution);
 

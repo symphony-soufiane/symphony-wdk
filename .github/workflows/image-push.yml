@@ -23,8 +23,8 @@ jobs:
       - name: Setup java
         uses: actions/setup-java@v3
         with:
-        distribution: corretto
-        java-version: 17
+          distribution: corretto
+          java-version: 17
 
       - name: Build botJar
         uses: gradle/gradle-build-action@v2

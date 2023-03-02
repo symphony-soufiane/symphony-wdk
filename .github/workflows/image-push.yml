@@ -1,5 +1,4 @@
-name: Create and publish a Docker image
-
+name: Publish Docker image
 on:
   release:
     types: [ published ]
@@ -14,17 +13,48 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: corretto
+          java-version: 17
+
+      - name: Build bootJar
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: bootJar
+
+      - uses: actions/cache/save@v3
+        with:
+          key: ${{ github.sha }}
+          path: lib
+
+      - uses: actions/cache/save@v3
+        with:
+          key: wdk-bot-${{ github.sha }}
+          path: workflow-bot-app.jar
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@ec9cdf07d570632daeb912f5b2099cb9ec1d01e6
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@3343011071fa59c64a174cc6aa415dc13b31b7b2
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - run: |
-          echo "tags: ${{ steps.meta.outputs.tags }}"
-          echo "labels: ${{ steps.meta.outputs.labels }}"
-          echo "outputs: ${{ steps.meta.outputs }}"
-          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
+      - name: Build and push Docker image
+        uses: docker/build-push-action@35434f557ad77672899d67f7992fb5560bda1071
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

@@ -26,10 +26,10 @@ jobs:
           distribution: corretto
           java-version: 17
 
-      - name: Build botJar
+      - name: Build bootJar
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: botJar
+          arguments: bootJar
 
       - uses: actions/cache/save@v3
         with:

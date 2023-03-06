@@ -48,6 +48,9 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           path: .
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: .
         
       - name: Log in to the Container registry
         uses: docker/login-action@ec9cdf07d570632daeb912f5b2099cb9ec1d01e6

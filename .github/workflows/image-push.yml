@@ -8,12 +8,12 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push-image:
+  job1:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
+      - name: dummy
+        id: dummy
+        run: echo "dummyy"
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -27,17 +27,15 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: bootJar
-
-      - uses: actions/cache/save@v3
-        with:
-          key: ${{ github.sha }}
-          path: lib
-
-      - uses: actions/cache/save@v3
-        with:
-          key: wdk-bot-${{ github.sha }}
-          path: workflow-bot-app.jar
-
+          
+  build-and-push-image:
+    name: "push docker image"
+    needs: job1
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
       - name: Log in to the Container registry
         uses: docker/login-action@ec9cdf07d570632daeb912f5b2099cb9ec1d01e6
         with:
